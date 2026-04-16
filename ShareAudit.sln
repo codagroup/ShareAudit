@@ -1,21 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11626.88 stable
+VisualStudioVersion = 18.4.11626.88
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{20E0FD49-F242-4361-809A-111F4F0CE77E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dionach.ShareAudit", "src\Dionach.ShareAudit\Dionach.ShareAudit.csproj", "{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC9F4628-6E6A-4BD5-A684-A19CB94249FB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dionach.ShareAudit.Modules.UserInterface", "src\Dionach.ShareAudit.Modules.UserInterface\Dionach.ShareAudit.Modules.UserInterface.csproj", "{28CF3837-FF58-463B-AF81-E6B0039DE55F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareAudit.Model", "Model\ShareAudit.Model.csproj", "{2CE622F6-4A42-2F15-D0F5-BBE2BA536A91}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareAudit.Interop", "Interop\ShareAudit.Interop.csproj", "{B255F0C6-0D97-47E5-82DE-50CC2EA80F1A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareAudit.Service", "Service\ShareAudit.Service.csproj", "{3447F8C7-D512-36AA-4F89-4FD220E3E330}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareAudit.UI", "UI\ShareAudit.UI.csproj", "{867AFB9C-87E7-42A1-B8B8-F7B49271632D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28CF3837-FF58-463B-AF81-E6B0039DE55F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28CF3837-FF58-463B-AF81-E6B0039DE55F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28CF3837-FF58-463B-AF81-E6B0039DE55F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28CF3837-FF58-463B-AF81-E6B0039DE55F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CE622F6-4A42-2F15-D0F5-BBE2BA536A91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CE622F6-4A42-2F15-D0F5-BBE2BA536A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CE622F6-4A42-2F15-D0F5-BBE2BA536A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,13 +29,13 @@ Global
 		{3447F8C7-D512-36AA-4F89-4FD220E3E330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3447F8C7-D512-36AA-4F89-4FD220E3E330}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3447F8C7-D512-36AA-4F89-4FD220E3E330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{867AFB9C-87E7-42A1-B8B8-F7B49271632D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{867AFB9C-87E7-42A1-B8B8-F7B49271632D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{867AFB9C-87E7-42A1-B8B8-F7B49271632D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{867AFB9C-87E7-42A1-B8B8-F7B49271632D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1D1B59D9-10AF-40FE-BE99-578C09DB7A2A} = {20E0FD49-F242-4361-809A-111F4F0CE77E}
-		{28CF3837-FF58-463B-AF81-E6B0039DE55F} = {20E0FD49-F242-4361-809A-111F4F0CE77E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {04F6815F-15A2-4B74-A2F3-2CF8753BDD87}

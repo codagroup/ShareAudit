@@ -112,12 +112,6 @@
     <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dionach.ShareAudit.Modules.UserInterface\Dionach.ShareAudit.Modules.UserInterface.csproj">
-      <Project>{28cf3837-ff58-463b-af81-e6b0039de55f}</Project>
-      <Name>Dionach.ShareAudit.Modules.UserInterface</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\Icon.ico" />
   </ItemGroup>
   <ItemGroup>

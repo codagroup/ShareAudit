@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
+    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interop\ShareAudit.Interop.csproj" />
+    <ProjectReference Include="..\Model\ShareAudit.Model.csproj" />
+    <ProjectReference Include="..\Service\ShareAudit.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Banner.png" />
+    <Resource Include="Images\Icon.ico" />
+    <Resource Include="Images\Icon.png" />
+    <Resource Include="Images\imageres_2.ico" />
+    <Resource Include="Images\imageres_32.ico" />
+    <Resource Include="Images\imageres_4.ico" />
+    <Resource Include="Images\imageres_51.ico" />
+    <Resource Include="Images\imageres_78.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+</Project>
