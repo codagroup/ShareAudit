@@ -101,16 +101,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dionach.ShareAudit.Model\Dionach.ShareAudit.Model.csproj">
-      <Project>{1DFC488D-E104-4F35-98DA-F23BF6D3F9DC}</Project>
-      <Name>Dionach.ShareAudit.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dionach.ShareAudit.Modules.Services.Interop\Dionach.ShareAudit.Modules.Services.Interop.csproj">
-      <Project>{8425D05F-F3F4-4132-9BE1-BED752685333}</Project>
-      <Name>Dionach.ShareAudit.Modules.Services.Interop</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="IPNetwork2">
       <Version>2.4.0.99</Version>
     </PackageReference>

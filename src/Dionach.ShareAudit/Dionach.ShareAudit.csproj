@@ -109,13 +109,9 @@
     <PackageReference Include="Costura.Fody">
       <Version>3.3.3</Version>
     </PackageReference>
-    <PackageReference Include="Prism.DryIoc" Version="7.1.0.431" />
+    <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dionach.ShareAudit.Modules.Services\Dionach.ShareAudit.Modules.Services.csproj">
-      <Project>{F5BFA34B-3CDE-4C77-9162-96666303FDEA}</Project>
-      <Name>Dionach.ShareAudit.Modules.Services</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dionach.ShareAudit.Modules.UserInterface\Dionach.ShareAudit.Modules.UserInterface.csproj">
       <Project>{28cf3837-ff58-463b-af81-e6b0039de55f}</Project>
       <Name>Dionach.ShareAudit.Modules.UserInterface</Name>

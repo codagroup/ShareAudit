@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IPNetwork2" Version="4.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.3.9" />
+    <PackageReference Include="Prism.Core" Version="9.0.537" />
+    <PackageReference Include="SimpleImpersonation" Version="4.2.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="10.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interop\ShareAudit.Interop.csproj" />
+    <ProjectReference Include="..\Model\ShareAudit.Model.csproj" />
+  </ItemGroup>
+
+</Project>
