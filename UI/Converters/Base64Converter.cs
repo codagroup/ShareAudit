@@ -13,7 +13,7 @@ public sealed class Base64Converter : IValueConverter
     {
         if (value is string)
         {
-            return Encoding.Default.GetString(System.Convert.FromBase64String(value as string));
+            return Encoding.Default.GetString(System.Convert.FromBase64String((value as string)!));
         }
 
         return string.Empty;
@@ -23,7 +23,7 @@ public sealed class Base64Converter : IValueConverter
     {
         if (value is string)
         {
-            return System.Convert.ToBase64String(Encoding.Default.GetBytes(value as string));
+            return System.Convert.ToBase64String(Encoding.Default.GetBytes((value as string)!));
         }
 
         return string.Empty;

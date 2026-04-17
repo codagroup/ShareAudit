@@ -11,15 +11,15 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
     private readonly IRegionManager _regionManager;
     private readonly IScopeNormalizationService _scopeNormalizationService;
     private readonly IScopeValidationService _scopeValidationService;
-    private string _errorMessageForCredentials;
-    private string _errorMessageForDomain;
-    private string _errorMessageForPassword;
-    private string _errorMessageForScope;
-    private string _errorMessageForUsername;
-    private bool _isBusy;
-    private bool _isProjectUnconfigured;
-    private Project _project;
-    private string _projectPath;
+    private string _errorMessageForCredentials = string.Empty;
+    private string _errorMessageForDomain = string.Empty;
+    private string _errorMessageForPassword = string.Empty;
+    private string _errorMessageForScope = string.Empty;
+    private string _errorMessageForUsername = string.Empty;
+    private bool _isBusy = false;
+    private bool _isProjectUnconfigured = false;
+    private Project? _project;
+    private string _projectPath = string.Empty;
 
     public ConfigurationViewModel(
         IRegionManager regionManager,
@@ -36,7 +36,7 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
 
         Cancel = new DelegateCommand(OnCancel, CanCancel).ObservesProperty(() => IsBusy);
         Next = new DelegateCommand(OnNext, CanNext).ObservesProperty(() => IsBusy);
-        Import = new DelegateCommand(OnImport, CanImport).ObservesProperty(() => IsBusy).ObservesProperty(() => Project.Configuration.Scope);
+        Import = new DelegateCommand(OnImport, CanImport).ObservesProperty(() => IsBusy).ObservesProperty(() => _project!.Configuration.Scope);
         UseCurrentCredentials = new DelegateCommand(OnUseCurrentCredentials, CanUseCurrentCredentials).ObservesProperty(() => IsBusy);
     }
 
@@ -88,7 +88,7 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
 
     public DelegateCommand Next { get; }
 
-    public Project Project
+    public Project? Project
     {
         get => _project;
         private set => SetProperty(ref _project, value);
@@ -152,35 +152,35 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
         ErrorMessageForCredentials = string.Empty;
 
 #pragma warning disable IDE0042 // Deconstruct variable declaration
-        var domainValidationResult = await _credentialsValidationService.ValidateDomainAsync(Project.Configuration.Credentials.Domain);
+        var domainValidationResult = await _credentialsValidationService.ValidateDomainAsync(_project!.Configuration.Credentials.Domain);
         ErrorMessageForDomain = domainValidationResult.errorMessage;
 
-        var usernameValidationResult = await _credentialsValidationService.ValidateUsernameAsync(Project.Configuration.Credentials.Username);
+        var usernameValidationResult = await _credentialsValidationService.ValidateUsernameAsync(_project!.Configuration.Credentials.Username);
         ErrorMessageForUsername = usernameValidationResult.errorMessage;
 
         var passwordValidationResult = (isValid: true, errorMessage: string.Empty);
-        if (!Project.Configuration.Credentials.UseCurrentCredentials)
+        if (!_project!.Configuration.Credentials.UseCurrentCredentials)
         {
-            passwordValidationResult = await _credentialsValidationService.ValidatePasswordAsync(Project.Configuration.Credentials.Password);
+            passwordValidationResult = await _credentialsValidationService.ValidatePasswordAsync(_project!.Configuration.Credentials.Password);
             ErrorMessageForPassword = passwordValidationResult.errorMessage;
         }
 
         var credentialsValidationResult = (isValid: true, errorMessage: string.Empty);
 #pragma warning restore IDE0042 // Deconstruct variable declaration
-        if (!Project.Configuration.Credentials.UseCurrentCredentials && domainValidationResult.isValid && usernameValidationResult.isValid && passwordValidationResult.isValid)
+        if (!_project!.Configuration.Credentials.UseCurrentCredentials && domainValidationResult.isValid && usernameValidationResult.isValid && passwordValidationResult.isValid)
         {
-            credentialsValidationResult = await _credentialsValidationService.ValidateCredentialsAsync(Project.Configuration.Credentials);
+            credentialsValidationResult = await _credentialsValidationService.ValidateCredentialsAsync(_project!.Configuration.Credentials);
             ErrorMessageForCredentials = credentialsValidationResult.errorMessage;
         }
 
         if (credentialsValidationResult.isValid)
         {
-            await _fileSystemStoreService.SaveProjectAsync(Project, ProjectPath);
+            await _fileSystemStoreService.SaveProjectAsync(_project!, ProjectPath);
 
             var parameters = new NavigationParameters
             {
                 { nameof(ImportScopeViewModel.ProjectPath), ProjectPath },
-                { nameof(ImportScopeViewModel.Project), Project }
+                { nameof(ImportScopeViewModel.Project), _project! }
             };
 
             _regionManager.RequestNavigate("ContentRegion", nameof(ImportScopeView), parameters);
@@ -200,54 +200,46 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
         ErrorMessageForScope = string.Empty;
 
         var credentialsValidationResult = (isValid: true, errorMessage: string.Empty);
-        if (!Project.Configuration.IsReadOnly && !Project.Configuration.Credentials.UseCurrentCredentials)
+        if (!_project!.Configuration.IsReadOnly && !_project!.Configuration.Credentials.UseCurrentCredentials)
         {
 #pragma warning disable IDE0042 // Deconstruct variable declaration
-            var domainValidationResult = await _credentialsValidationService.ValidateDomainAsync(Project.Configuration.Credentials.Domain);
+            var domainValidationResult = await _credentialsValidationService.ValidateDomainAsync(_project!.Configuration.Credentials.Domain);
             ErrorMessageForDomain = domainValidationResult.errorMessage;
 
-            var usernameValidationResult = await _credentialsValidationService.ValidateUsernameAsync(Project.Configuration.Credentials.Username);
+            var usernameValidationResult = await _credentialsValidationService.ValidateUsernameAsync(_project!.Configuration.Credentials.Username);
             ErrorMessageForUsername = usernameValidationResult.errorMessage;
 
             var passwordValidationResult = (isValid: true, errorMessage: string.Empty);
-            if (!Project.Configuration.Credentials.UseCurrentCredentials)
+            if (!_project!.Configuration.Credentials.UseCurrentCredentials)
             {
-                passwordValidationResult = await _credentialsValidationService.ValidatePasswordAsync(Project.Configuration.Credentials.Password);
+                passwordValidationResult = await _credentialsValidationService.ValidatePasswordAsync(_project!.Configuration.Credentials.Password);
                 ErrorMessageForPassword = passwordValidationResult.errorMessage;
             }
 
             if (domainValidationResult.isValid && usernameValidationResult.isValid && passwordValidationResult.isValid)
             {
-                credentialsValidationResult = await _credentialsValidationService.ValidateCredentialsAsync(Project.Configuration.Credentials);
+                credentialsValidationResult = await _credentialsValidationService.ValidateCredentialsAsync(_project!.Configuration.Credentials);
                 ErrorMessageForCredentials = credentialsValidationResult.errorMessage;
             }
         }
 
-        var scopeValidationResult = await _scopeValidationService.ValidateScopeAsync(Project.Configuration.Scope);
+        var scopeValidationResult = await _scopeValidationService.ValidateScopeAsync(_project!.Configuration.Scope);
 #pragma warning restore IDE0042 // Deconstruct variable declaration
         ErrorMessageForScope = scopeValidationResult.errorMessage;
 
         if (scopeValidationResult.isValid)
         {
-            Project.Configuration.Scope = await _scopeNormalizationService.NormalizeScopeAsync(Project.Configuration.Scope);
+            _project!.Configuration.Scope = await _scopeNormalizationService.NormalizeScopeAsync(_project!.Configuration.Scope);
         }
 
-        if ((!Project.Configuration.IsReadOnly && credentialsValidationResult.isValid && scopeValidationResult.isValid) || (Project.Configuration.IsReadOnly && scopeValidationResult.isValid))
+        if ((!_project!.Configuration.IsReadOnly && credentialsValidationResult.isValid && scopeValidationResult.isValid) || (_project!.Configuration.IsReadOnly && scopeValidationResult.isValid))
         {
-            if (Project.State < ProjectState.Configured)
+            if (_project!.State < ProjectState.Configured)
             {
-                Project.State = ProjectState.Configured;
+                _project!.State = ProjectState.Configured;
             }
 
-            await _fileSystemStoreService.SaveProjectAsync(Project, ProjectPath);
-
-            var parameters = new NavigationParameters
-            {
-                { nameof(ImportScopeViewModel.ProjectPath), ProjectPath },
-                { nameof(ImportScopeViewModel.Project), Project }
-            };
-
-            //_regionManager.RequestNavigate("ContentRegion", nameof(AuditView), parameters);
+            await _fileSystemStoreService.SaveProjectAsync(_project!, ProjectPath);
         }
 
         IsBusy = false;
@@ -257,20 +249,20 @@ public class ConfigurationViewModel : BindableBase, INavigationAware
     {
         IsBusy = true;
 
-        if (Project.Configuration.Credentials.UseCurrentCredentials)
+        if (_project!.Configuration.Credentials.UseCurrentCredentials)
         {
             (var domain, var username) = await _credentialsValidationService.GetCurrentUserInformation();
-            Project.Configuration.Credentials.Domain = domain;
-            Project.Configuration.Credentials.Username = username;
-            Project.Configuration.Credentials.Password = string.Empty;
-            Project.Configuration.UseAlternateAuthenticationMethod = false;
+            _project!.Configuration.Credentials.Domain = domain;
+            _project!.Configuration.Credentials.Username = username;
+            _project!.Configuration.Credentials.Password = string.Empty;
+            _project!.Configuration.UseAlternateAuthenticationMethod = false;
         }
         else
         {
-            Project.Configuration.Credentials.Domain = string.Empty;
-            Project.Configuration.Credentials.Username = string.Empty;
-            Project.Configuration.Credentials.Password = string.Empty;
-            Project.Configuration.UseAlternateAuthenticationMethod = true;
+            _project!.Configuration.Credentials.Domain = string.Empty;
+            _project!.Configuration.Credentials.Username = string.Empty;
+            _project!.Configuration.Credentials.Password = string.Empty;
+            _project!.Configuration.UseAlternateAuthenticationMethod = true;
         }
 
         IsBusy = false;

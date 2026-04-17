@@ -13,15 +13,15 @@ public sealed class ItemDetailToStringConverter : IValueConverter
     {
         if (value is FileSystemEntry)
         {
-            if ((value is FileEntry && (value as FileEntry).State < FileEntryState.Complete) ||
-                (value is IFolderEntry && (value as IFolderEntry).State < FolderEntryState.GettingEffectiveAccess))
+            if ((value is FileEntry && (value as FileEntry)!.State < FileEntryState.Complete) ||
+                (value is IFolderEntry && (value as IFolderEntry)!.State < FolderEntryState.GettingEffectiveAccess))
             {
                 return string.Empty;
             }
 
             var fileSystemEntry = value as FileSystemEntry;
             var sb = new StringBuilder();
-            sb.AppendLine(fileSystemEntry.FullName);
+            sb.AppendLine(fileSystemEntry!.FullName);
             sb.AppendLine();
             sb.AppendLine($"Effective Access: {(fileSystemEntry.EffectiveAccess.Write ? "Write" : "Read")}");
             sb.AppendLine();
@@ -42,7 +42,7 @@ public sealed class ItemDetailToStringConverter : IValueConverter
                 sb.AppendLine();
                 sb.AppendLine("Preview:");
                 sb.AppendLine("--------");
-                sb.Append(Encoding.Default.GetString(System.Convert.FromBase64String((value as FileEntry).Head)));
+                sb.Append(Encoding.Default.GetString(System.Convert.FromBase64String((value as FileEntry)!.Head)));
             }
 
             return sb.ToString();

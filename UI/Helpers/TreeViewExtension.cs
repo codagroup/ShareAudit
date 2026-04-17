@@ -26,22 +26,25 @@ public static class TreeViewExtension
 
     public static TreeViewItem VisualUpwardSearch(DependencyObject source)
     {
-        while (source != null && !(source is TreeViewItem))
+        while (source is not null && source is not TreeViewItem)
         {
             source = VisualTreeHelper.GetParent(source);
         }
 
-        return source as TreeViewItem;
+        return (source as TreeViewItem)!;
     }
 
     private static void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
-        TreeViewItem treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-
-        if (treeViewItem != null)
+        if (e.OriginalSource is DependencyObject)
         {
-            treeViewItem.Focus();
-            e.Handled = true;
+            TreeViewItem treeViewItem = VisualUpwardSearch((e.OriginalSource as DependencyObject)!);
+
+            if (treeViewItem != null)
+            {
+                treeViewItem.Focus();
+                e.Handled = true;
+            }
         }
     }
 

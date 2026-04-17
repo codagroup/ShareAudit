@@ -10,7 +10,7 @@ public class TreeViewHelper
     public static readonly DependencyProperty SelectedItemProperty =
         DependencyProperty.RegisterAttached("SelectedItem", typeof(object), typeof(TreeViewHelper), new UIPropertyMetadata(null, OnSelectedItemChanged));
 
-    private static Dictionary<DependencyObject, TreeViewSelectedItemBehavior> behaviors = new Dictionary<DependencyObject, TreeViewSelectedItemBehavior>();
+    private readonly static Dictionary<DependencyObject, TreeViewSelectedItemBehavior> behaviors = [];
 
     [AttachedPropertyBrowsableForType(typeof(DependencyObject))]
     public static object GetSelectedItem(DependencyObject obj)
@@ -25,23 +25,23 @@ public class TreeViewHelper
 
     private static void OnSelectedItemChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
     {
-        if (!(obj is TreeView))
+        if (obj is not TreeView)
         {
             return;
         }
 
-        if (!behaviors.ContainsKey(obj))
+        if (!behaviors.TryGetValue(obj, out TreeViewSelectedItemBehavior? view))
         {
-            behaviors.Add(obj, new TreeViewSelectedItemBehavior(obj as TreeView));
+            view = new TreeViewSelectedItemBehavior((obj as TreeView)!);
+            behaviors.Add(obj, view);
         }
 
-        TreeViewSelectedItemBehavior view = behaviors[obj];
         view.ChangeSelectedItem(e.NewValue);
     }
 
     private class TreeViewSelectedItemBehavior
     {
-        private TreeView _view;
+        private readonly TreeView _view;
 
         public TreeViewSelectedItemBehavior(TreeView view)
         {

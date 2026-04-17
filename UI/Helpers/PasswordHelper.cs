@@ -26,7 +26,7 @@ public static class PasswordHelper
 
     private static void OnAttachChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        if (!(sender is PasswordBox passwordBox))
+        if (sender is not PasswordBox passwordBox)
         {
             return;
         }
@@ -44,23 +44,29 @@ public static class PasswordHelper
 
     private static void OnPasswordChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        PasswordBox passwordBox = sender as PasswordBox;
-        passwordBox.PasswordChanged -= PasswordChanged;
-
-        if (!(bool)GetIsUpdating(passwordBox))
+        if (sender is PasswordBox)
         {
-            passwordBox.Password = (string)e.NewValue;
-        }
+            PasswordBox passwordBox = (sender as PasswordBox)!;
+            passwordBox.PasswordChanged -= PasswordChanged;
 
-        passwordBox.PasswordChanged += PasswordChanged;
+            if (!(bool)GetIsUpdating(passwordBox))
+            {
+                passwordBox.Password = (string)e.NewValue;
+            }
+
+            passwordBox.PasswordChanged += PasswordChanged;
+        }
     }
 
     private static void PasswordChanged(object sender, RoutedEventArgs e)
     {
-        PasswordBox passwordBox = sender as PasswordBox;
-        SetIsUpdating(passwordBox, true);
-        SetPassword(passwordBox, passwordBox.Password);
-        SetIsUpdating(passwordBox, false);
+        if (sender is PasswordBox)
+        {
+            PasswordBox passwordBox = (sender as PasswordBox)!;
+            SetIsUpdating(passwordBox, true);
+            SetPassword(passwordBox, passwordBox.Password);
+            SetIsUpdating(passwordBox, false);
+        }
     }
 
     private static void SetIsUpdating(DependencyObject dp, bool value) => dp.SetValue(IsUpdatingProperty, value);

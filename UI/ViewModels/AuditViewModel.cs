@@ -13,10 +13,10 @@ public class AuditViewModel : BindableBase, INavigationAware
     private readonly ISmbUtilitiesService _smbUtilitiesService;
     private bool _isBusy;
     private bool _isRunning;
-    private Project _project;
-    private string _projectPath;
+    private Project? _project;
+    private string _projectPath = string.Empty;
     private bool _runningInitialAutomaticAudit = false;
-    private object _selectedItem = new object();
+    private object _selectedItem = new();
 
     public AuditViewModel(
         IFileSystemStoreService fileSystemStoreService,
@@ -35,15 +35,22 @@ public class AuditViewModel : BindableBase, INavigationAware
         _shareAuditService.Stopped += async (sender, e) =>
         {
             IsRunning = false;
-            await _fileSystemStoreService.SaveProjectAsync(Project, ProjectPath);
-
-            if (_runningInitialAutomaticAudit)
+            if (_project is null || _projectPath == string.Empty)
             {
-                MessageBox.Show("The initial audit is now complete, you may proceed to review the results", "Initial Audit Complete", MessageBoxButton.OK, MessageBoxImage.Information);
-                _runningInitialAutomaticAudit = false;
+                throw new ArgumentException("Project or path not specified.");
             }
+            else
+            {
+                await _fileSystemStoreService.SaveProjectAsync(_project, _projectPath);
 
-            IsBusy = false;
+                if (_runningInitialAutomaticAudit)
+                {
+                    MessageBox.Show("The initial audit is now complete, you may proceed to review the results", "Initial Audit Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _runningInitialAutomaticAudit = false;
+                }
+
+                IsBusy = false;
+            }
         };
 
         Export = new DelegateCommand(OnExport, CanExport).ObservesProperty(() => IsBusy).ObservesProperty(() => IsRunning);
@@ -69,7 +76,7 @@ public class AuditViewModel : BindableBase, INavigationAware
         private set => SetProperty(ref _isRunning, value);
     }
 
-    public Project Project
+    public Project? Project
     {
         get => _project;
         private set => SetProperty(ref _project, value);
@@ -118,7 +125,7 @@ public class AuditViewModel : BindableBase, INavigationAware
     private bool CanAuditFolder()
     {
         return SelectedItem is IFolderEntry &&
-            (SelectedItem as IFolderEntry).State == FolderEntryState.EnumerationSuspended &&
+            (SelectedItem as IFolderEntry)!.State == FolderEntryState.EnumerationSuspended &&
             !IsBusy &&
             !IsRunning &&
             !(Project?.Configuration?.IsReadOnly ?? true);
@@ -140,10 +147,16 @@ public class AuditViewModel : BindableBase, INavigationAware
     private void OnAuditFolder()
     {
         IsBusy = true;
+        if (SelectedItem is IFolderEntry && _project is not null)
+        {
+            (SelectedItem as IFolderEntry)!.State = FolderEntryState.EnumeratingFilesystemEntries;
 
-        (SelectedItem as IFolderEntry).State = FolderEntryState.EnumeratingFilesystemEntries;
-
-        _shareAuditService.StartAudit(Project);
+            _shareAuditService.StartAudit(_project);
+        }
+        else
+        {
+            throw new ArgumentException("Selected item is invalid");
+        }
     }
 
     private async void OnExport()
@@ -156,7 +169,7 @@ public class AuditViewModel : BindableBase, INavigationAware
             FileName = _fileSystemStoreService.ExportDefaultFilename
         };
 
-        if (dialog.ShowDialog() == true)
+        if (dialog.ShowDialog() == true && _project is not null)
         {
             await _fileSystemStoreService.ExportProjectAsync(_project, dialog.FileName);
         }
@@ -170,18 +183,18 @@ public class AuditViewModel : BindableBase, INavigationAware
 
         if (SelectedItem is FileEntry)
         {
-            var host = (SelectedItem as FileEntry).FullName.Trim('\\').Split('\\')[0];
-            if (_project.Configuration.Credentials.UseCurrentCredentials)
+            var host = (SelectedItem as FileEntry)!.FullName.Trim('\\').Split('\\')[0];
+            if (_project!.Configuration.Credentials.UseCurrentCredentials)
             {
-                using (Process.Start("explorer.exe", $"/select,\"{(SelectedItem as FileEntry).FullName}\""))
+                using (Process.Start("explorer.exe", $"/select,\"{(SelectedItem as FileEntry)!.FullName}\""))
                 {
                 }
             }
             else
             {
-                using (var netUseConnection = _smbUtilitiesService.CreateNetUseConnection(host, Project.Configuration.Credentials.Username, Project.Configuration.Credentials.Domain, Project.Configuration.Credentials.Password))
+                using (var netUseConnection = _smbUtilitiesService.CreateNetUseConnection(host, _project.Configuration.Credentials.Username, _project.Configuration.Credentials.Domain, _project.Configuration.Credentials.Password))
                 {
-                    using (Process.Start("explorer.exe", $"/select,\"{(SelectedItem as FileEntry).FullName}\""))
+                    using (Process.Start("explorer.exe", $"/select,\"{(SelectedItem as FileEntry)!.FullName}\""))
                     {
                     }
                 }
@@ -189,18 +202,18 @@ public class AuditViewModel : BindableBase, INavigationAware
         }
         else
         {
-            var host = (SelectedItem as IFolderEntry).FullName.Trim('\\').Split('\\')[0];
-            if (_project.Configuration.Credentials.UseCurrentCredentials)
+            var host = (SelectedItem as IFolderEntry)!.FullName.Trim('\\').Split('\\')[0];
+            if (_project!.Configuration.Credentials.UseCurrentCredentials)
             {
-                using (Process.Start("explorer.exe", $"\"{(SelectedItem as IFolderEntry).FullName}\""))
+                using (Process.Start("explorer.exe", $"\"{(SelectedItem as IFolderEntry)!.FullName}\""))
                 {
                 }
             }
             else
             {
-                using (var netUseConnection = _smbUtilitiesService.CreateNetUseConnection(host, Project.Configuration.Credentials.Username, Project.Configuration.Credentials.Domain, Project.Configuration.Credentials.Password))
+                using (var netUseConnection = _smbUtilitiesService.CreateNetUseConnection(host, _project.Configuration.Credentials.Username, _project.Configuration.Credentials.Domain, _project.Configuration.Credentials.Password))
                 {
-                    using (Process.Start("explorer.exe", $"\"{(SelectedItem as IFolderEntry).FullName}\""))
+                    using (Process.Start("explorer.exe", $"\"{(SelectedItem as IFolderEntry)!.FullName}\""))
                     {
                     }
                 }
@@ -213,8 +226,14 @@ public class AuditViewModel : BindableBase, INavigationAware
     private void OnStartAudit()
     {
         IsBusy = true;
-
-        _shareAuditService.StartAudit(Project);
+        if (_project is not null)
+        {
+            _shareAuditService.StartAudit(_project);
+        }
+        else
+        {
+            throw new ArgumentException("No project created.");
+        }
     }
 
     private void OnStopAudit()

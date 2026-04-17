@@ -9,11 +9,11 @@ public class ImportScopeViewModel : BindableBase, INavigationAware
     private readonly IFileSystemStoreService _fileSystemStoreService;
     private readonly IImportScopeFromActiveDirectoryService _importScopeFromActiveDirectoryService;
     private readonly IRegionManager _regionManager;
-    private string _domain;
+    private string _domain = string.Empty;
     private ImportComputerType _importComputerType = ImportComputerType.Servers;
-    private bool _isBusy;
-    private Project _project;
-    private string _projectPath;
+    private bool _isBusy = false;
+    private Project? _project;
+    private string _projectPath = string.Empty;
 
     public ImportScopeViewModel(
         IRegionManager regionManager,
@@ -50,7 +50,7 @@ public class ImportScopeViewModel : BindableBase, INavigationAware
         private set => SetProperty(ref _isBusy, value);
     }
 
-    public Project Project
+    public Project? Project
     {
         get => _project;
         private set => SetProperty(ref _project, value);
@@ -83,8 +83,8 @@ public class ImportScopeViewModel : BindableBase, INavigationAware
     {
         var parameters = new NavigationParameters
             {
-                { nameof(ConfigurationViewModel.ProjectPath), ProjectPath },
-                { nameof(ConfigurationViewModel.Project), Project }
+                { nameof(ConfigurationViewModel.ProjectPath), _projectPath },
+                { nameof(ConfigurationViewModel.Project), _project! }
             };
 
         _regionManager.RequestNavigate("ContentRegion", nameof(ConfigurationView), parameters);
@@ -94,21 +94,21 @@ public class ImportScopeViewModel : BindableBase, INavigationAware
     {
         IsBusy = true;
 
-        if (Project.Configuration.Credentials.UseCurrentCredentials)
+        if (_project!.Configuration.Credentials.UseCurrentCredentials)
         {
-            Project.Configuration.Scope = await _importScopeFromActiveDirectoryService.Import(Domain, ImportComputerType);
+            _project!.Configuration.Scope = await _importScopeFromActiveDirectoryService.Import(Domain, ImportComputerType);
         }
         else
         {
-            Project.Configuration.Scope = await _importScopeFromActiveDirectoryService.Import(Domain, Project.Configuration.Credentials.Username, Project.Configuration.Credentials.Password, ImportComputerType);
+            _project!.Configuration.Scope = await _importScopeFromActiveDirectoryService.Import(Domain, _project!.Configuration.Credentials.Username, _project!.Configuration.Credentials.Password, ImportComputerType);
         }
 
-        await _fileSystemStoreService.SaveProjectAsync(Project, ProjectPath);
+        await _fileSystemStoreService.SaveProjectAsync(_project!, ProjectPath);
 
         var parameters = new NavigationParameters
             {
                 { nameof(ConfigurationViewModel.ProjectPath), ProjectPath },
-                { nameof(ConfigurationViewModel.Project), Project }
+                { nameof(ConfigurationViewModel.Project), _project! }
             };
 
         _regionManager.RequestNavigate("ContentRegion", nameof(ConfigurationView), parameters);
